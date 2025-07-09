@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Супер-Кликер!</title>
+    <title>Супер-Кликер с Апгрейдами!</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,55 +16,64 @@
             background-color: #f0f0f0;
             color: #333;
             text-align: center;
-            overflow: hidden; /* Предотвращаем прокрутку */
+            overflow: hidden;
+            padding: 10px; /* Добавим небольшой отступ */
+            box-sizing: border-box;
         }
         .game-container {
             background-color: #fff;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            max-width: 90%;
+            max-width: 95%; /* Увеличим ширину */
+            width: 400px; /* Максимальная ширина для больших экранов */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 80%; /* Занимает большую часть контейнера */
+            justify-content: space-between; /* Распределим элементы */
+            height: auto; /* Высота по содержимому */
+            min-height: 500px; /* Минимальная высота */
             box-sizing: border-box;
         }
+        h1 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        #score {
+            margin-bottom: 20px;
+            font-size: 3.5em; /* Увеличим размер счета */
+            font-weight: bold;
+            color: #007bff;
+            min-width: 100px;
+        }
         #clickButton {
-            width: 200px;
-            height: 200px;
-            background-color: #ff6347; /* Томатный цвет */
+            width: 180px; /* Немного уменьшим кнопку */
+            height: 180px;
+            background-color: #ff6347;
             color: white;
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: bold;
             border: none;
-            border-radius: 50%; /* Круглая кнопка */
+            border-radius: 50%;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: transform 0.1s ease-out, background-color 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            user-select: none; /* Запрещаем выделение текста */
-            -webkit-tap-highlight-color: transparent; /* Убираем синюю подсветку при тапе на мобильных */
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            margin-bottom: 20px;
         }
         #clickButton:active {
-            transform: scale(0.95); /* Эффект нажатия */
+            transform: scale(0.95);
             background-color: #e0523a;
         }
-        #score {
-            margin-top: 30px;
-            font-size: 3em;
-            font-weight: bold;
-            color: #007bff;
-            min-width: 100px; /* Чтобы счетчик не "прыгал" */
-        }
         #resetButton {
-            margin-top: 20px;
-            padding: 10px 25px;
-            font-size: 1.2em;
-            background-color: #6c757d; /* Серый цвет */
+            margin-top: 15px;
+            padding: 8px 20px;
+            font-size: 1em;
+            background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 8px;
@@ -81,7 +90,7 @@
             font-weight: bold;
             opacity: 0;
             animation: fadeOutUp 0.8s ease-out forwards;
-            pointer-events: none; /* Чтобы не мешало кликам */
+            pointer-events: none;
         }
 
         @keyframes fadeOutUp {
@@ -94,6 +103,60 @@
                 opacity: 0;
             }
         }
+
+        /* Стили для магазина апгрейдов */
+        .upgrades-section {
+            width: 100%;
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .upgrades-section h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .upgrade-info {
+            text-align: left;
+        }
+        .upgrade-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2em;
+            color: #343a40;
+        }
+        .upgrade-info p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .upgrade-button {
+            padding: 8px 15px;
+            font-size: 1em;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .upgrade-button:hover:not(:disabled) {
+            background-color: #218838;
+        }
+        .upgrade-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -102,83 +165,115 @@
         <div id="score">0</div>
         <button id="clickButton">КЛИК!</button>
         <button id="resetButton">Сбросить счет</button>
+
+        <div class="upgrades-section">
+            <h2>Магазин улучшений</h2>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <h3>Улучшенный клик</h3>
+                    <p>Увеличивает количество очков за клик на 1.</p>
+                    <p>Стоимость: <span id="upgrade1Cost">10</span> очков</p>
+                    <p>Уровень: <span id="upgrade1Level">0</span></p>
+                </div>
+                <button id="buyUpgrade1" class="upgrade-button">Купить</button>
+            </div>
+            </div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let score = 0;
+        let clicksPerTap = 1; // Сколько очков даёт один клик
+        let upgrade1Level = 0;
+        let upgrade1Cost = 10;
+        const upgrade1CostMultiplier = 1.5; // Множитель стоимости для следующего уровня
+
         const scoreDisplay = document.getElementById('score');
         const clickButton = document.getElementById('clickButton');
         const resetButton = document.getElementById('resetButton');
-        const gameContainer = document.querySelector('.game-container'); // Для анимации
+
+        const upgrade1CostDisplay = document.getElementById('upgrade1Cost');
+        const upgrade1LevelDisplay = document.getElementById('upgrade1Level');
+        const buyUpgrade1Button = document.getElementById('buyUpgrade1');
+
+        // Функция для обновления интерфейса магазина
+        function updateUpgradeShop() {
+            upgrade1CostDisplay.textContent = Math.ceil(upgrade1Cost); // Округляем стоимость до целого
+            upgrade1LevelDisplay.textContent = upgrade1Level;
+
+            // Отключаем кнопку, если недостаточно очков
+            if (score >= upgrade1Cost) {
+                buyUpgrade1Button.disabled = false;
+            } else {
+                buyUpgrade1Button.disabled = true;
+            }
+        }
 
         // Функция для обработки клика
         function handleClick(event) {
-            score++;
+            score += clicksPerTap; // Увеличиваем счет на clicksPerTap
             scoreDisplay.textContent = score;
+            updateUpgradeShop(); // Обновляем магазин после каждого клика
 
-            // Создаем анимацию "+1"
+            // Создаем анимацию "+N"
             const animation = document.createElement('div');
-            animation.textContent = '+1';
+            animation.textContent = `+${clicksPerTap}`; // Показываем, сколько очков добавилось
             animation.classList.add('click-animation');
 
-            // Позиционируем анимацию рядом с местом клика
-            // event.clientX/Y дают координаты относительно окна,
-            // нужно скорректировать относительно контейнера игры
             const rect = clickButton.getBoundingClientRect();
             animation.style.left = `${event.clientX - rect.left}px`;
             animation.style.top = `${event.clientY - rect.top}px`;
             
-            // Добавляем к кнопке, чтобы позиционирование было относительно нее
             clickButton.appendChild(animation);
 
-            // Удаляем элемент анимации после завершения анимации
             animation.addEventListener('animationend', () => {
                 animation.remove();
             });
         }
 
         // Функция для сброса счета
-        function resetScore() {
+        function resetGame() {
             score = 0;
+            clicksPerTap = 1;
+            upgrade1Level = 0;
+            upgrade1Cost = 10;
             scoreDisplay.textContent = score;
-            // Можно добавить сообщение для пользователя, если нужно
-            // Telegram.WebApp.showAlert('Счет сброшен!');
+            updateUpgradeShop(); // Обновляем магазин после сброса
+        }
+
+        // Функция для покупки улучшения "Улучшенный клик"
+        function buyUpgrade1() {
+            if (score >= upgrade1Cost) {
+                score -= upgrade1Cost; // Вычитаем стоимость
+                clicksPerTap++; // Увеличиваем очки за клик
+                upgrade1Level++; // Увеличиваем уровень улучшения
+                upgrade1Cost *= upgrade1CostMultiplier; // Увеличиваем стоимость следующего уровня
+
+                scoreDisplay.textContent = score; // Обновляем счет
+                updateUpgradeShop(); // Обновляем магазин
+            } else {
+                // Это сообщение не должно появляться, так как кнопка будет отключена
+                // Но на всякий случай оставим
+                if (window.Telegram && window.Telegram.WebApp) {
+                    Telegram.WebApp.showAlert('Недостаточно очков для покупки!');
+                } else {
+                    alert('Недостаточно очков для покупки!');
+                }
+            }
         }
 
         // Добавляем обработчики событий
         clickButton.addEventListener('click', handleClick);
-        resetButton.addEventListener('click', resetScore);
+        resetButton.addEventListener('click', resetGame);
+        buyUpgrade1Button.addEventListener('click', buyUpgrade1);
 
-        // Опционально: Отправка счета в бота при закрытии WebApp
-        // Telegram.WebApp.onEvent('mainButtonClicked', function() {
-        //     // Пример: отправка счета, когда пользователь нажимает главную кнопку бота
-        //     // (если она настроена и видна)
-        //     if (window.Telegram && window.Telegram.WebApp) {
-        //         Telegram.WebApp.sendData(JSON.stringify({ type: 'game_score', score: score }));
-        //     }
-        // });
-
-        // Или отправка счета при закрытии WebApp
-        // window.addEventListener('beforeunload', function() {
-        //     if (window.Telegram && window.Telegram.WebApp) {
-        //         Telegram.WebApp.sendData(JSON.stringify({ type: 'game_score', score: score }));
-        //     }
-        // });
-
-        // Инициализация Telegram WebApp (если нужно показать главную кнопку или другие элементы)
+        // Инициализация Telegram WebApp
         if (window.Telegram && window.Telegram.WebApp) {
             Telegram.WebApp.ready();
-            // Если вы хотите, чтобы WebApp сам закрывался по кнопке вверху,
-            // можно использовать Telegram.WebApp.close();
-            // Но в WebApp обычно есть своя кнопка закрытия, встроенная в интерфейс Telegram.
-            // Также можно настроить главную кнопку бота:
-            // Telegram.WebApp.MainButton.setText('Отправить счет в бота').show();
-            // Telegram.WebApp.MainButton.onClick(function() {
-            //     Telegram.WebApp.sendData(JSON.stringify({ type: 'game_score', score: score }));
-            //     Telegram.WebApp.close();
-            // });
         }
+
+        // Первичное обновление магазина при загрузке
+        updateUpgradeShop();
     </script>
 </body>
 </html>

@@ -3,337 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Супер-Кликер с Апгрейдами и Сохранением!</title>
+    <title>Мой Кликер</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            justify-content: center;
+            min-height: 100vh;
             background-color: #f0f0f0;
+            margin: 0;
             color: #333;
-            text-align: center;
-            overflow: hidden;
-            padding: 10px;
-            box-sizing: border-box;
         }
         .game-container {
             background-color: #fff;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            max-width: 95%;
-            width: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            height: auto;
-            min-height: 500px;
-            box-sizing: border-box;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
         }
         h1 {
-            color: #007bff;
-            margin-bottom: 10px;
+            color: #4CAF50;
         }
         #score {
-            margin-bottom: 20px;
-            font-size: 3.5em;
-            font-weight: bold;
-            color: #007bff;
-            min-width: 100px;
+            font-size: 3em;
+            margin: 20px 0;
+            color: #333;
         }
         #clickButton {
-            width: 180px;
-            height: 180px;
-            background-color: #ff6347;
+            background-color: #4CAF50;
             color: white;
-            font-size: 2.2em;
-            font-weight: bold;
+            padding: 15px 30px;
             border: none;
-            border-radius: 50%;
+            border-radius: 5px;
+            font-size: 1.5em;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.1s ease-out, background-color 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.2s ease;
+            width: 80%;
             margin-bottom: 20px;
         }
         #clickButton:active {
-            transform: scale(0.95);
-            background-color: #e0523a;
+            background-color: #45a049;
         }
-        #resetButton {
-            margin-top: 15px;
-            padding: 8px 20px;
-            font-size: 1em;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #resetButton:hover {
-            background-color: #5a6268;
-        }
-        .click-animation {
-            position: absolute;
-            color: #ff6347;
-            font-size: 2em;
-            font-weight: bold;
-            opacity: 0;
-            animation: fadeOutUp 0.8s ease-out forwards;
-            pointer-events: none;
-        }
-
-        @keyframes fadeOutUp {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-        }
-
-        /* Стили для магазина апгрейдов */
-        .upgrades-section {
-            width: 100%;
-            margin-top: 25px;
+        .upgrade-section {
             border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        .upgrades-section h2 {
-            color: #007bff;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-        .upgrade-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        .upgrade-info {
-            text-align: left;
-        }
-        .upgrade-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.2em;
-            color: #343a40;
-        }
-        .upgrade-info p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #6c757d;
+            padding-top: 15px;
+            margin-top: 15px;
         }
         .upgrade-button {
-            padding: 8px 15px;
-            font-size: 1em;
-            background-color: #28a745;
+            background-color: #008CBA;
             color: white;
+            padding: 10px 15px;
             border: none;
             border-radius: 5px;
+            font-size: 1em;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.2s ease;
+            margin: 5px;
+            width: calc(50% - 10px); /* Adjust width for two buttons per row */
+            box-sizing: border-box; /* Include padding and border in the element's total width */
         }
-        .upgrade-button:hover:not(:disabled) {
-            background-color: #218838;
+        .upgrade-button:active {
+            background-color: #007bb5;
         }
-        .upgrade-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+        .save-button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .save-button:active {
+            background-color: #da190b;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap to the next line */
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>Супер-Кликер!</h1>
-        <div id="score">0</div>
-        <button id="clickButton">КЛИК!</button>
-        <button id="resetButton">Сбросить счет</button>
+        <h1>Мой Кликер</h1>
+        <p>Очки: <span id="score">0</span></p>
+        <button id="clickButton">Кликнуть!</button>
 
-        <div class="upgrades-section">
-            <h2>Магазин улучшений</h2>
-            <div class="upgrade-item">
-                <div class="upgrade-info">
-                    <h3>Улучшенный клик</h3>
-                    <p>Увеличивает количество очков за клик на 1.</p>
-                    <p>Стоимость: <span id="upgrade1Cost">10</span> очков</p>
-                    <p>Уровень: <span id="upgrade1Level">0</span></p>
-                </div>
-                <button id="buyUpgrade1" class="upgrade-button">Купить</button>
+        <div class="upgrade-section">
+            <h2>Улучшения</h2>
+            <div class="button-group">
+                <button id="upgrade1Button" class="upgrade-button">
+                    Улучшение 1 (x<span id="clicksPerTapDisplay">1</span>): <span id="upgrade1CostDisplay">10</span> очков
+                    <br>(Уровень: <span id="upgrade1LevelDisplay">0</span>)
+                </button>
             </div>
         </div>
+        <button id="saveAndExitButton" class="save-button">Сохранить прогресс и выйти</button>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let score = 0;
         let clicksPerTap = 1;
         let upgrade1Level = 0;
         let upgrade1Cost = 10;
-        const upgrade1CostMultiplier = 1.5;
 
         const scoreDisplay = document.getElementById('score');
         const clickButton = document.getElementById('clickButton');
-        const resetButton = document.getElementById('resetButton');
+        const upgrade1Button = document.getElementById('upgrade1Button');
+        const clicksPerTapDisplay = document.getElementById('clicksPerTapDisplay');
+        const upgrade1CostDisplay = document.getElementById('upgrade1CostDisplay');
+        const upgrade1LevelDisplay = document.getElementById('upgrade1LevelDisplay');
+        const saveAndExitButton = document.getElementById('saveAndExitButton');
 
-        const upgrade1CostDisplay = document.getElementById('upgrade1Cost');
-        const upgrade1LevelDisplay = document.getElementById('upgrade1Level');
-        const buyUpgrade1Button = document.getElementById('buyUpgrade1');
-
-        // Функция для обновления интерфейса магазина
-        function updateUpgradeShop() {
-            upgrade1CostDisplay.textContent = Math.ceil(upgrade1Cost);
+        // --- Функция для обновления отображения UI ---
+        function updateUI() {
+            scoreDisplay.textContent = Math.floor(score); // Округляем для отображения
+            clicksPerTapDisplay.textContent = clicksPerTap;
+            upgrade1CostDisplay.textContent = Math.floor(upgrade1Cost);
             upgrade1LevelDisplay.textContent = upgrade1Level;
 
-            if (score >= upgrade1Cost) {
-                buyUpgrade1Button.disabled = false;
+            if (score < upgrade1Cost) {
+                upgrade1Button.disabled = true;
             } else {
-                buyUpgrade1Button.disabled = true;
+                upgrade1Button.disabled = false;
             }
         }
 
-        // Функция для обработки клика
-        function handleClick(event) {
-            score += clicksPerTap;
-            scoreDisplay.textContent = score;
-            updateUpgradeShop();
-
-            const animation = document.createElement('div');
-            animation.textContent = `+${clicksPerTap}`;
-            animation.classList.add('click-animation');
-
-            const rect = clickButton.getBoundingClientRect();
-            animation.style.left = `${event.clientX - rect.left}px`;
-            animation.style.top = `${event.clientY - rect.top}px`;
-            
-            clickButton.appendChild(animation);
-
-            animation.addEventListener('animationend', () => {
-                animation.remove();
-            });
-        }
-
-        // Функция для сброса игры (сбрасываем все параметры к начальным)
-        function resetGame() {
-            score = 0;
-            clicksPerTap = 1;
-            upgrade1Level = 0;
-            upgrade1Cost = 10;
-            scoreDisplay.textContent = score;
-            updateUpgradeShop();
-        }
-
-        // Функция для покупки улучшения "Улучшенный клик"
-        function buyUpgrade1() {
-            if (score >= upgrade1Cost) {
-                score -= Math.ceil(upgrade1Cost);
-                clicksPerTap++;
-                upgrade1Level++;
-                upgrade1Cost *= upgrade1CostMultiplier;
-
-                scoreDisplay.textContent = score;
-                updateUpgradeShop();
-            } else {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    Telegram.WebApp.showAlert('Недостаточно очков для покупки!');
-                } else {
-                    alert('Недостаточно очков для покупки!');
-                }
-            }
-        }
-
-        // --- НОВЫЙ КОД ДЛЯ СОХРАНЕНИЯ/ЗАГРУЗКИ ПРОГРЕССА ---
-
-        // Функция для загрузки данных от бота при запуске WebApp
-        function loadGameProgress(data) {
-            if (data && data.score !== undefined) {
-                score = data.score;
-                clicksPerTap = data.clicksPerTap || 1;
-                upgrade1Level = data.upgrade1Level || 0;
-                upgrade1Cost = data.upgrade1Cost || 10;
-                
-                scoreDisplay.textContent = score;
-                updateUpgradeShop();
-                console.log('Прогресс загружен:', data);
-            } else {
-                console.log('Данные для загрузки не найдены или некорректны, начинаем новую игру.');
-                resetGame(); // Начать новую игру, если данных нет
-            }
-        }
-
-        // Функция для отправки данных боту
-        function sendDataToBot(data) {
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(JSON.stringify(data));
-                console.log('Данные отправлены боту:', data);
-            } else {
-                console.warn('Telegram WebApp API не доступен. Данные не отправлены.', data);
-            }
-        }
-
-        // Инициализация Telegram WebApp и логика загрузки/сохранения
-        if (window.Telegram && window.Telegram.WebApp) {
-            Telegram.WebApp.ready();
-
-            // Читаем параметры из текущего URL WebApp (этот метод более надежен для передачи данных)
-            const urlParams = new URLSearchParams(window.location.search);
-            const gameDataJson = urlParams.get('game_data'); // Получаем параметр 'game_data'
-            
-            if (gameDataJson) {
+        // --- Загрузка данных из URL при запуске WebApp ---
+        function loadGameDataFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const gameDataEncoded = params.get('game_data');
+            if (gameDataEncoded) {
                 try {
-                    // Декодируем и парсим JSON-строку
-                    const gameData = JSON.parse(decodeURIComponent(gameDataJson));
-                    loadGameProgress(gameData); // Загружаем данные
+                    const gameData = JSON.parse(decodeURIComponent(gameDataEncoded));
+                    score = gameData.score || 0;
+                    clicksPerTap = gameData.clicksPerTap || 1;
+                    upgrade1Level = gameData.upgrade1Level || 0;
+                    upgrade1Cost = gameData.upgrade1Cost || 10;
+                    console.log('Данные игры загружены из URL:', gameData);
                 } catch (e) {
-                    console.error('Ошибка при парсинге данных игры из URL:', e);
-                    resetGame(); // Если ошибка, начинаем новую игру
+                    console.error('Ошибка при декодировании данных игры из URL:', e);
                 }
             } else {
-                console.log('Параметр game_data не найден в URL. Начинаем новую игру.');
-                resetGame(); // Если параметр не найден, начинаем новую игру
+                console.log('Данные игры в URL не найдены. Загружаем значения по умолчанию.');
             }
-
-            // Добавляем обработчики для Главной кнопки Telegram WebApp
-            // Эта кнопка появляется в нижней части WebApp интерфейса Telegram
-            Telegram.WebApp.MainButton.setText('Сохранить прогресс и выйти').show();
-            Telegram.WebApp.MainButton.onClick(function() {
-                const gameProgress = {
-                    score: score,
-                    clicksPerTap: clicksPerTap,
-                    upgrade1Level: upgrade1Level,
-                    upgrade1Cost: upgrade1Cost
-                };
-                sendDataToBot({ type: 'save_game', data: gameProgress });
-                Telegram.WebApp.close(); // Закрываем WebApp после отправки данных
-            });
-        } else {
-            console.warn('Telegram WebApp API не доступен. Запуск в обычном браузере.');
-            resetGame(); // Для тестирования в обычном браузере, сбрасываем игру
+            updateUI();
         }
 
-        // Добавляем обработчики событий для кнопок игры
-        clickButton.addEventListener('click', handleClick);
-        resetButton.addEventListener('click', resetGame);
-        buyUpgrade1Button.addEventListener('click', buyUpgrade1);
+        // --- Обработчики событий ---
+        clickButton.addEventListener('click', () => {
+            score += clicksPerTap;
+            updateUI();
+        });
 
-        // Первичное обновление магазина при загрузке (после возможной загрузки прогресса)
-        updateUpgradeShop();
+        upgrade1Button.addEventListener('click', () => {
+            if (score >= upgrade1Cost) {
+                score -= upgrade1Cost;
+                clicksPerTap += 1; // Увеличиваем клики за тап
+                upgrade1Level += 1;
+                upgrade1Cost *= 1.5; // Увеличиваем стоимость улучшения
+                updateUI();
+            }
+        });
+
+        saveAndExitButton.addEventListener('click', () => {
+            const gameData = {
+                score: score,
+                clicksPerTap: clicksPerTap,
+                upgrade1Level: upgrade1Level,
+                upgrade1Cost: upgrade1Cost
+            };
+            // Отправляем данные в бота
+            Telegram.WebApp.sendData(JSON.stringify({ type: 'save_game', data: gameData }));
+            console.log('Данные игры отправлены в бота:', gameData);
+            // Закрываем WebApp после отправки
+            Telegram.WebApp.close();
+        });
+
+        // --- Инициализация при загрузке страницы ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGameDataFromURL(); // Загружаем данные из URL
+            Telegram.WebApp.ready(); // Уведомляем Telegram, что WebApp готов
+            //Telegram.WebApp.expand(); // Можно попробовать развернуть WebApp на весь экран
+        });
+
     </script>
 </body>
 </html>

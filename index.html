@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мое Telegram WebApp</title>
+    <title>Супер-Кликер!</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,64 +16,169 @@
             background-color: #f0f0f0;
             color: #333;
             text-align: center;
+            overflow: hidden; /* Предотвращаем прокрутку */
         }
-        h1 {
-            color: #007bff;
-        }
-        p {
-            margin-top: 20px;
-            font-size: 1.1em;
-        }
-        .info {
+        .game-container {
             background-color: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 80%;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80%; /* Занимает большую часть контейнера */
+            box-sizing: border-box;
         }
-        button {
-            padding: 12px 25px;
-            font-size: 1.1em;
-            background-color: #28a745;
+        #clickButton {
+            width: 200px;
+            height: 200px;
+            background-color: #ff6347; /* Томатный цвет */
+            color: white;
+            font-size: 2.5em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50%; /* Круглая кнопка */
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s ease-out, background-color 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            user-select: none; /* Запрещаем выделение текста */
+            -webkit-tap-highlight-color: transparent; /* Убираем синюю подсветку при тапе на мобильных */
+        }
+        #clickButton:active {
+            transform: scale(0.95); /* Эффект нажатия */
+            background-color: #e0523a;
+        }
+        #score {
+            margin-top: 30px;
+            font-size: 3em;
+            font-weight: bold;
+            color: #007bff;
+            min-width: 100px; /* Чтобы счетчик не "прыгал" */
+        }
+        #resetButton {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 1.2em;
+            background-color: #6c757d; /* Серый цвет */
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 20px;
             transition: background-color 0.3s ease;
         }
-        button:hover {
-            background-color: #218838;
+        #resetButton:hover {
+            background-color: #5a6268;
+        }
+        .click-animation {
+            position: absolute;
+            color: #ff6347;
+            font-size: 2em;
+            font-weight: bold;
+            opacity: 0;
+            animation: fadeOutUp 0.8s ease-out forwards;
+            pointer-events: none; /* Чтобы не мешало кликам */
+        }
+
+        @keyframes fadeOutUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="info">
-        <h1>Привет из моего WebApp!</h1>
-        <p>Эта страница открылась прямо в Telegram!</p>
-        <p>Я могу быть чем угодно: формой, мини-игрой, информацией о вашем бизнесе.</p>
-        <button onclick="closeWebApp()">Закрыть WebApp</button>
+    <div class="game-container">
+        <h1>Супер-Кликер!</h1>
+        <div id="score">0</div>
+        <button id="clickButton">КЛИК!</button>
+        <button id="resetButton">Сбросить счет</button>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Функция для закрытия WebApp
-        function closeWebApp() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.close();
-            } else {
-                alert('Эта функция доступна только в Telegram WebApp.');
-            }
+        let score = 0;
+        const scoreDisplay = document.getElementById('score');
+        const clickButton = document.getElementById('clickButton');
+        const resetButton = document.getElementById('resetButton');
+        const gameContainer = document.querySelector('.game-container'); // Для анимации
+
+        // Функция для обработки клика
+        function handleClick(event) {
+            score++;
+            scoreDisplay.textContent = score;
+
+            // Создаем анимацию "+1"
+            const animation = document.createElement('div');
+            animation.textContent = '+1';
+            animation.classList.add('click-animation');
+
+            // Позиционируем анимацию рядом с местом клика
+            // event.clientX/Y дают координаты относительно окна,
+            // нужно скорректировать относительно контейнера игры
+            const rect = clickButton.getBoundingClientRect();
+            animation.style.left = `${event.clientX - rect.left}px`;
+            animation.style.top = `${event.clientY - rect.top}px`;
+            
+            // Добавляем к кнопке, чтобы позиционирование было относительно нее
+            clickButton.appendChild(animation);
+
+            // Удаляем элемент анимации после завершения анимации
+            animation.addEventListener('animationend', () => {
+                animation.remove();
+            });
         }
 
-        // Пример: как получить данные пользователя из Telegram (если они переданы)
-        // В реальном приложении здесь можно было бы обработать initData, переданные ботом
-        // if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-        //     const user = window.Telegram.WebApp.initDataUnsafe.user;
-        //     if (user) {
-        //         document.querySelector('h1').innerText = `Привет, ${user.first_name || 'друг'}!`;
+        // Функция для сброса счета
+        function resetScore() {
+            score = 0;
+            scoreDisplay.textContent = score;
+            // Можно добавить сообщение для пользователя, если нужно
+            // Telegram.WebApp.showAlert('Счет сброшен!');
+        }
+
+        // Добавляем обработчики событий
+        clickButton.addEventListener('click', handleClick);
+        resetButton.addEventListener('click', resetScore);
+
+        // Опционально: Отправка счета в бота при закрытии WebApp
+        // Telegram.WebApp.onEvent('mainButtonClicked', function() {
+        //     // Пример: отправка счета, когда пользователь нажимает главную кнопку бота
+        //     // (если она настроена и видна)
+        //     if (window.Telegram && window.Telegram.WebApp) {
+        //         Telegram.WebApp.sendData(JSON.stringify({ type: 'game_score', score: score }));
         //     }
-        // }
+        // });
+
+        // Или отправка счета при закрытии WebApp
+        // window.addEventListener('beforeunload', function() {
+        //     if (window.Telegram && window.Telegram.WebApp) {
+        //         Telegram.WebApp.sendData(JSON.stringify({ type: 'game_score', score: score }));
+        //     }
+        // });
+
+        // Инициализация Telegram WebApp (если нужно показать главную кнопку или другие элементы)
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            // Если вы хотите, чтобы WebApp сам закрывался по кнопке вверху,
+            // можно использовать Telegram.WebApp.close();
+            // Но в WebApp обычно есть своя кнопка закрытия, встроенная в интерфейс Telegram.
+            // Также можно настроить главную кнопку бота:
+            // Telegram.WebApp.MainButton.setText('Отправить счет в бота').show();
+            // Telegram.WebApp.MainButton.onClick(function() {
+            //     Telegram.WebApp.sendData(JSON.stringify({ type: 'game_score', score: score }));
+            //     Telegram.WebApp.close();
+            // });
+        }
     </script>
 </body>
 </html>
